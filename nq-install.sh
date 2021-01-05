@@ -23,8 +23,8 @@ echo -e "|\n|   NodeQuery Installer\n|   ===================\n|"
 # Root required
 if [ $(id -u) != "0" ];
 then
-	echo -e "|   Error: You need to be root to install the NodeQuery agent\n|"
-	echo -e "|          The agent itself will NOT be running as root but instead under its own non-privileged user\n|"
+	echo -e "|   错误：您需要是root用户才能安装NodeQuery代理\n|"
+	echo -e "|          代理本身不会以root用户身份运行，而是以其自己的非特权用户身份运行\n|"
 	exit 1
 fi
 
@@ -39,30 +39,30 @@ fi
 if [ ! -n "$(command -v crontab)" ]
 then
 
-	# Confirm crontab installation
-	echo "|" && read -p "|   Crontab is required and could not be found. Do you want to install it? [Y/n] " input_variable_install
+	# 确认crontab安装
+	echo "|" && read -p "|   Crontab是必需的，找不到. 您要安装吗? [Y/n] " input_variable_install
 
-	# Attempt to install crontab
+	# 尝试安装crontab
 	if [ -z $input_variable_install ] || [ $input_variable_install == "Y" ] || [ $input_variable_install == "y" ]
 	then
 		if [ -n "$(command -v apt-get)" ]
 		then
-			echo -e "|\n|   Notice: Installing required package 'cron' via 'apt-get'"
+			echo -e "|\n|   注意：通过 'apt-get' 安装所需的软件包 'cron' "
 		    apt-get -y update
 		    apt-get -y install cron
 		elif [ -n "$(command -v yum)" ]
 		then
-			echo -e "|\n|   Notice: Installing required package 'cronie' via 'yum'"
+			echo -e "|\n|   注意：通过 'yun' 安装所需的软件包 'cron' "
 		    yum -y install cronie
 		    
 		    if [ ! -n "$(command -v crontab)" ]
 		    then
-		    	echo -e "|\n|   Notice: Installing required package 'vixie-cron' via 'yum'"
+		    	echo -e "|\n|   注意：通过 'yum' 安装所需的软件包 'vixie-cron'"
 		    	yum -y install vixie-cron
 		    fi
 		elif [ -n "$(command -v pacman)" ]
 		then
-			echo -e "|\n|   Notice: Installing required package 'cronie' via 'pacman'"
+			echo -e "|\n|   注意：通过 'pacman' 安装所需的软件包'cronie'"
 		    pacman -S --noconfirm cronie
 		fi
 	fi
@@ -70,7 +70,7 @@ then
 	if [ ! -n "$(command -v crontab)" ]
 	then
 	    # Show error
-	    echo -e "|\n|   Error: Crontab is required and could not be installed\n|"
+	    echo -e "|\n|   错误：Crontab是必需的，无法安装\n|"
 	    exit 1
 	fi	
 fi
@@ -80,23 +80,23 @@ if [ -z "$(ps -Al | grep cron | grep -v grep)" ]
 then
 	
 	# Confirm cron service
-	echo "|" && read -p "|   Cron is available but not running. Do you want to start it? [Y/n] " input_variable_service
+	echo "|" && read -p "|   Cron可用，但未运行. 你想开始吗? [Y/n] " input_variable_service
 
 	# Attempt to start cron
 	if [ -z $input_variable_service ] || [ $input_variable_service == "Y" ] || [ $input_variable_service == "y" ]
 	then
 		if [ -n "$(command -v apt-get)" ]
 		then
-			echo -e "|\n|   Notice: Starting 'cron' via 'service'"
+			echo -e "|\n|   通过'service'启动'cron'"
 			service cron start
 		elif [ -n "$(command -v yum)" ]
 		then
-			echo -e "|\n|   Notice: Starting 'crond' via 'service'"
+			echo -e "|\n|   Starting 'crond' via 'service'"
 			chkconfig crond on
 			service crond start
 		elif [ -n "$(command -v pacman)" ]
 		then
-			echo -e "|\n|   Notice: Starting 'cronie' via 'systemctl'"
+			echo -e "|\n|   Starting 'cronie' via 'systemctl'"
 		    systemctl start cronie
 		    systemctl enable cronie
 		fi
@@ -106,7 +106,7 @@ then
 	if [ -z "$(ps -Al | grep cron | grep -v grep)" ]
 	then
 		# Show error
-		echo -e "|\n|   Error: Cron is available but could not be started\n|"
+		echo -e "|\n|   错误：Cron可用，但无法启动\n|"
 		exit 1
 	fi
 fi
@@ -150,7 +150,7 @@ then
 	crontab -u nodequery -l 2>/dev/null | { cat; echo "*/3 * * * * bash /etc/nodequery/nq-agent.sh > /etc/nodequery/nq-cron.log 2>&1"; } | crontab -u nodequery -
 	
 	# Show success
-	echo -e "|\n|   Success: The NodeQuery agent has been installed\n|"
+	echo -e "|\n|   成功：已安装NodeQuery代理\n|"
 	
 	# Attempt to delete installation script
 	if [ -f $0 ]
@@ -159,5 +159,5 @@ then
 	fi
 else
 	# Show error
-	echo -e "|\n|   Error: The NodeQuery agent could not be installed\n|"
+	echo -e "|\n|   错误：无法安装NodeQuery代理\n|"
 fi
